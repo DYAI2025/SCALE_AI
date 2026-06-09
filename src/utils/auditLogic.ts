@@ -163,6 +163,40 @@ export const EXPECTED_MAPPED_FIELDS: MappedFieldInfo[] = [
   { field: "blocked_flag", label: "Blocked Flag", description: "Indicator if item was halted", synonyms: ["blocked", "flagged", "is blocked", "blocker", "blocked flag", "blocked_flag"] }
 ];
 
+function getLevenshteinDistance(a: string, b: string): number {
+  const lenA = a.length;
+  const lenB = b.length;
+  const dp: number[][] = Array.from({ length: lenA + 1 }, () => Array(lenB + 1).fill(0));
+  
+  for (let i = 0; i <= lenA; i++) dp[i][0] = i;
+  for (let j = 0; j <= lenB; j++) dp[0][j] = j;
+
+  for (let i = 1; i <= lenA; i++) {
+    for (let j = 1; j <= lenB; j++) {
+      if (a[i - 1].toLowerCase() === b[j - 1].toLowerCase()) {
+        dp[i][j] = dp[i - 1][j - 1];
+      } else {
+        dp[i][j] = Math.min(
+          dp[i - 1][j] + 1,      // deletion
+          dp[i][j - 1] + 1,      // insertion
+          dp[i - 1][j - 1] + 1   // substitution
+        );
+      }
+    }
+  }
+  return dp[lenA][lenB];
+}
+
+function getStringSimilarity(a: string, b: string): number {
+  const cleanA = a.toLowerCase().replace(/[\s_-]+/g, "").trim();
+  const cleanB = b.toLowerCase().replace(/[\s_-]+/g, "").trim();
+  if (cleanA === cleanB) return 1.0;
+  if (!cleanA || !cleanB) return 0.0;
+  const maxLen = Math.max(cleanA.length, cleanB.length);
+  const dist = getLevenshteinDistance(cleanA, cleanB);
+  return 1.0 - (dist / maxLen);
+}
+
 export function suggestMappingsForColumns(headers: string[]): SuggestedMapping[] {
   const suggestions: SuggestedMapping[] = [];
   const mappedExpectedFields = new Set<string>();
@@ -170,7 +204,7 @@ export function suggestMappingsForColumns(headers: string[]): SuggestedMapping[]
   headers.forEach(header => {
     const cleanHeader = header.toLowerCase().replace(/[\s_-]+/g, "_").trim();
     
-    // Check perfect exact matches first
+    // 1. Check perfect exact matches first
     for (const expected of EXPECTED_MAPPED_FIELDS) {
       if (mappedExpectedFields.has(expected.field)) continue;
       
@@ -190,7 +224,7 @@ export function suggestMappingsForColumns(headers: string[]): SuggestedMapping[]
       }
     }
 
-    // Check substring matches
+    // 2. Check substring matches
     for (const expected of EXPECTED_MAPPED_FIELDS) {
       if (mappedExpectedFields.has(expected.field)) continue;
       
@@ -210,6 +244,38 @@ export function suggestMappingsForColumns(headers: string[]): SuggestedMapping[]
         mappedExpectedFields.add(expected.field);
         return;
       }
+    }
+
+    // 3. Fallback: Levenshtein distance rating match (highest match over 0.50 similarity)
+    let bestMatchField: string | null = null;
+    let bestMatchLabel = "";
+    let highestSimilarity = 0;
+
+    for (const expected of EXPECTED_MAPPED_FIELDS) {
+      if (mappedExpectedFields.has(expected.field)) continue;
+
+      // check similarity with the field or any of its synonyms
+      const scores = [
+        getStringSimilarity(cleanHeader, expected.field),
+        ...expected.synonyms.map(s => getStringSimilarity(cleanHeader, s))
+      ];
+      const maxScore = Math.max(...scores);
+      if (maxScore > highestSimilarity) {
+        highestSimilarity = maxScore;
+        bestMatchField = expected.field;
+        bestMatchLabel = expected.label;
+      }
+    }
+
+    if (bestMatchField && highestSimilarity >= 0.52) {
+      suggestions.push({
+        csvColumn: header,
+        suggestedField: bestMatchField,
+        confidence: highestSimilarity >= 0.75 ? "medium" : "low",
+        reason: `Character similarity proposed for '${bestMatchLabel}' (${Math.round(highestSimilarity * 100)}%)`,
+        isConfirmed: false // requires explicit user verification
+      });
+      mappedExpectedFields.add(bestMatchField);
     }
   });
 

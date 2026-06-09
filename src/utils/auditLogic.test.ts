@@ -51,6 +51,19 @@ describe("auditLogic heuristic engine", () => {
     expect(badMapping).toBeUndefined();
   });
 
+  it("proposes fallback mappings with low or medium confidence for spelling mistakes using String Similarity", () => {
+    const headers = ["asigne", "sttus", "issuekey"];
+    const mappings = suggestMappingsForColumns(headers);
+
+    const asigneMap = mappings.find(m => m.csvColumn === "asigne");
+    expect(asigneMap).toBeDefined();
+    expect(asigneMap?.suggestedField).toBe("assignee_role");
+    
+    const sttusMap = mappings.find(m => m.csvColumn === "sttus");
+    expect(sttusMap).toBeDefined();
+    expect(sttusMap?.suggestedField).toBe("status");
+  });
+
   it("parses valid CSV content successfully", () => {
     const csv = "id,type,status\nCORP-1,Story,Done\nCORP-2,Bug,In Progress";
     const result = parseCsvContent(csv, "tickets.csv");
