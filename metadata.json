@@ -1,0 +1,6 @@
+{
+  "name": "Agile Audit Intake",
+  "description": "Functional consulting prototype for AI-assisted agile, change, and framework-fit audit intake and early reasoning, including local data upload, contradiction detection, and Cynefin-style context hypotheses.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
