@@ -5,6 +5,7 @@ import {
   Sparkles, 
   FileSpreadsheet, 
   UploadCloud, 
+  Download,
   Check, 
   AlertTriangle, 
   Activity, 
@@ -45,7 +46,8 @@ import {
   calculateCynefinHypothesis,
   generateInterimHypotheses,
   generateMissingDataQuestions,
-  calculateDataQuality
+  calculateDataQuality,
+  EXPECTED_MAPPED_FIELDS
 } from "../utils/auditLogic";
 
 // ==========================================
@@ -1193,6 +1195,114 @@ export const DataSourceUploadPanel: React.FC<StepProps> = ({ state, updateState,
                     )}
                   </div>
 
+                  {/* Synonyms & Schema Mapper Suggestions */}
+                  {state.uploadSummary.suggestedMappings && state.uploadSummary.suggestedMappings.length > 0 && (
+                    <div className="bg-natural-sidebar/30 border border-natural-border p-3.5 rounded-lg space-y-3">
+                      <div className="flex justify-between items-center border-b border-natural-border/50 pb-2">
+                        <h4 className="text-[11px] font-mono uppercase tracking-widest text-natural-primary font-bold flex items-center gap-1.5">
+                          <Sliders className="h-3.5 w-3.5 text-natural-accent" />
+                          <span>Smart Column Field Mappings</span>
+                        </h4>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            updateState(prev => {
+                              if (prev.uploadSummary?.suggestedMappings) {
+                                prev.uploadSummary.suggestedMappings = prev.uploadSummary.suggestedMappings.map(m => ({
+                                  ...m,
+                                  isConfirmed: true
+                                }));
+                                const JIRA_RECS = [
+                                  "issue_key", "issue_type", "status", "created_at", "started_at", "resolved_at", "assignee_role", "priority", "labels", "status_transitions", "blocked_flag"
+                                ];
+                                const mapped = new Set(prev.uploadSummary.suggestedMappings.filter(s => s.isConfirmed !== false).map(s => s.suggestedField));
+                                prev.uploadSummary.missingRecommendedColumns = JIRA_RECS.filter(f => !mapped.has(f));
+                              }
+                            });
+                          }}
+                          className="text-[9px] bg-white border border-natural-border hover:bg-natural-sidebar px-2 py-0.5 rounded uppercase font-bold text-natural-primary shadow-2xs cursor-pointer transition-colors"
+                        >
+                          Approve All Mappings
+                        </button>
+                      </div>
+
+                      <div className="space-y-2 max-h-[180px] overflow-y-auto pr-1">
+                        {state.uploadSummary.suggestedMappings.map((mapping, idx) => {
+                          const confBg = mapping.isConfirmed !== false ? "bg-emerald-50 text-emerald-800 border-emerald-200" : "bg-slate-50 text-slate-500 border-slate-200";
+                          return (
+                            <div key={idx} className="bg-white p-2.5 rounded border border-natural-border/60 flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-3">
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className="font-mono bg-natural-sidebar px-1.5 py-0.5 text-[10px] text-natural-primary font-bold rounded border border-natural-border/40">
+                                    {mapping.csvColumn}
+                                  </span>
+                                  <span className="text-natural-secondary text-[10px]">➜</span>
+                                  <span className="font-sans font-bold text-natural-text">
+                                    {EXPECTED_MAPPED_FIELDS.find(f => f.field === mapping.suggestedField)?.label || mapping.suggestedField}
+                                  </span>
+                                  <span className={`text-[8px] px-1 py-0.2 rounded-full uppercase font-bold font-mono ${confBg}`}>
+                                    {mapping.isConfirmed !== false ? "approved" : "review needed"}
+                                  </span>
+                                </div>
+                                <p className="text-[10px] text-natural-secondary leading-normal">
+                                  {mapping.reason} (Confidence: <strong className="font-semibold">{mapping.confidence}</strong>)
+                                </p>
+                              </div>
+
+                              <div className="flex items-center gap-2 self-end sm:self-auto">
+                                <select
+                                  value={mapping.suggestedField}
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    updateState(prev => {
+                                      if (prev.uploadSummary?.suggestedMappings?.[idx]) {
+                                        prev.uploadSummary.suggestedMappings[idx].suggestedField = val;
+                                        const JIRA_RECS = [
+                                          "issue_key", "issue_type", "status", "created_at", "started_at", "resolved_at", "assignee_role", "priority", "labels", "status_transitions", "blocked_flag"
+                                        ];
+                                        const mapped = new Set(prev.uploadSummary.suggestedMappings.filter(s => s.isConfirmed !== false).map(s => s.suggestedField));
+                                        prev.uploadSummary.missingRecommendedColumns = JIRA_RECS.filter(f => !mapped.has(f));
+                                      }
+                                    });
+                                  }}
+                                  className="text-[10px] font-mono bg-white border border-natural-border/85 px-1 pb-0.5 rounded text-natural-text focus:outline-none"
+                                >
+                                  {EXPECTED_MAPPED_FIELDS.map(f => (
+                                    <option key={f.field} value={f.field}>{f.label}</option>
+                                  ))}
+                                </select>
+
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    updateState(prev => {
+                                      if (prev.uploadSummary?.suggestedMappings?.[idx]) {
+                                        const isConf = prev.uploadSummary.suggestedMappings[idx].isConfirmed;
+                                        prev.uploadSummary.suggestedMappings[idx].isConfirmed = !isConf;
+                                        const JIRA_RECS = [
+                                          "issue_key", "issue_type", "status", "created_at", "started_at", "resolved_at", "assignee_role", "priority", "labels", "status_transitions", "blocked_flag"
+                                        ];
+                                        const mapped = new Set(prev.uploadSummary.suggestedMappings.filter(s => s.isConfirmed !== false).map(s => s.suggestedField));
+                                        prev.uploadSummary.missingRecommendedColumns = JIRA_RECS.filter(f => !mapped.has(f));
+                                      }
+                                    });
+                                  }}
+                                  className={`text-[9px] uppercase px-2 py-1 font-mono font-bold rounded cursor-pointer transition-colors border ${
+                                    mapping.isConfirmed !== false
+                                      ? "bg-natural-primary text-white border-natural-primary hover:bg-[#4A4A38]"
+                                      : "bg-white text-natural-secondary border-natural-border hover:bg-natural-sidebar"
+                                  }`}
+                                >
+                                  {mapping.isConfirmed !== false ? "✓ Approved" : "Approve?"}
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Top 5 Preview Table */}
                   <div>
                     <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 font-bold block mb-1.5">
@@ -1820,6 +1930,38 @@ export const InterimAuditSnapshot: React.FC<StepProps> = ({ state, updateState, 
     setTimeout(() => setCopiedStatus(false), 2000);
   };
 
+  const handleExportJsonFile = () => {
+    const exportData = {
+      exportedAt: new Date().toISOString(),
+      prototype: "AI Agile Audit Intake System",
+      interimAuditSnapshot: {
+        auditCase: state.auditCase,
+        companyProfile: state.companyProfile,
+        frameworkReality: state.frameworkReality,
+        productContext: state.productContext,
+        cynefinAssessment: state.cynefinAssessment,
+        derivedHypotheses: rulesHypotheses,
+        missingDataQuestions: nextQuestions,
+        dataQuality: qData
+      },
+      aiWorkOrderConfiguration: state.aiWorkOrder
+    };
+
+    const companyClean = state.auditCase.companyName
+      ? state.auditCase.companyName.toLowerCase().replace(/[\s_.-]+/g, '_')
+      : 'export';
+    const fileName = `agile_audit_snapshot_${companyClean}.json`;
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   const displayedDomain = assessment.consultantOverride 
     ? assessment.consultantOverride.domain 
     : assessment.primaryDomain;
@@ -1831,22 +1973,31 @@ export const InterimAuditSnapshot: React.FC<StepProps> = ({ state, updateState, 
           <h2 className="text-2xl font-serif italic text-natural-primary">Interim Audit Snapshot</h2>
           <p className="text-xs text-natural-secondary mt-0.5">Preliminary analysis based on current intake data and rule-based qualitative inference.</p>
         </div>
-        <div>
+        <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={handleExportDummy}
-            className="py-2 px-4 bg-natural-primary hover:bg-[#4A4A38] text-white font-mono text-xs uppercase tracking-widest font-bold rounded shadow-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer border-0"
+            className="py-2 px-4 bg-natural-sidebar hover:bg-natural-border text-natural-primary font-mono text-xs uppercase tracking-widest font-bold rounded shadow-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer border border-natural-border/40"
           >
             {copiedStatus ? (
               <>
-                <Check className="h-4 w-4 text-emerald-400" />
-                Copied JSON to clipboard
+                <Check className="h-4 w-4 text-emerald-600" />
+                <span>Copied to clipboard</span>
               </>
             ) : (
               <>
-                Confirm & Copy Snapshot JSON
+                <span>Copy Snapshot JSON</span>
               </>
             )}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleExportJsonFile}
+            className="py-2 px-4 bg-natural-primary hover:bg-[#4A4A38] text-white font-mono text-xs uppercase tracking-widest font-bold rounded shadow-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer border-0 animate-pulse-once"
+          >
+            <Download className="h-4 w-4 text-white" />
+            <span>Export & Save JSON File</span>
           </button>
         </div>
       </div>

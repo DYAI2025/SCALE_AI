@@ -6,7 +6,8 @@ import {
   CynefinAssessment,
   InterimHypothesis,
   MissingDataQuestion,
-  AuditState
+  AuditState,
+  SuggestedMapping
 } from "../types";
 
 export function resolveDemoCompany(): CompanyProfile {
@@ -142,6 +143,79 @@ const JIRA_RECOMMENDED_FIELDS = [
   "linked_issues"
 ];
 
+export interface MappedFieldInfo {
+  field: string;
+  label: string;
+  description: string;
+  synonyms: string[];
+}
+
+export const EXPECTED_MAPPED_FIELDS: MappedFieldInfo[] = [
+  { field: "issue_key", label: "Issue Key", description: "Unique tracker identifier (e.g. JIRA-101)", synonyms: ["key", "id", "issue key", "ticket id", "task id", "issue id", "identifier", "issue_key"] },
+  { field: "issue_type", label: "Issue Type", description: "Class of work (e.g. Story, Bug, Task)", synonyms: ["type", "issue type", "work type", "category", "item type", "issue_type", "issuetype"] },
+  { field: "status", label: "Status", description: "Current work state in the lifecycle", synonyms: ["status", "state", "stage", "progress", "workflow status", "issue_status"] },
+  { field: "created_at", label: "Created Date", description: "Timestamp of work item creation", synonyms: ["created", "created date", "created_at", "creation date", "opened date", "created date"] },
+  { field: "started_at", label: "Started Date", description: "Timestamp when work actually began", synonyms: ["started", "start date", "started_at", "date started", "in progress date", "wip date", "started date"] },
+  { field: "resolved_at", label: "Resolved Date", description: "Timestamp when work was completed", synonyms: ["resolved", "resolved date", "completed date", "closed date", "end date", "completed_at", "resolved date"] },
+  { field: "assignee_role", label: "Assignee / Role", description: "Resource role or standard handle assigned", synonyms: ["assignee", "role", "owner", "assignee role", "assigned to", "developer", "assignee_role"] },
+  { field: "priority", label: "Priority", description: "Value or urgency of work (e.g. High, Medium)", synonyms: ["priority", "urgency", "severity", "importance", "class of service"] },
+  { field: "labels", label: "Labels / Tags", description: "Categorization tags or components", synonyms: ["labels", "tags", "label", "tag", "components", "categories"] },
+  { field: "blocked_flag", label: "Blocked Flag", description: "Indicator if item was halted", synonyms: ["blocked", "flagged", "is blocked", "blocker", "blocked flag", "blocked_flag"] }
+];
+
+export function suggestMappingsForColumns(headers: string[]): SuggestedMapping[] {
+  const suggestions: SuggestedMapping[] = [];
+  const mappedExpectedFields = new Set<string>();
+
+  headers.forEach(header => {
+    const cleanHeader = header.toLowerCase().replace(/[\s_-]+/g, "_").trim();
+    
+    // Check perfect exact matches first
+    for (const expected of EXPECTED_MAPPED_FIELDS) {
+      if (mappedExpectedFields.has(expected.field)) continue;
+      
+      const hasExactSynonym = expected.synonyms.some(s => s.toLowerCase().replace(/[\s_-]+/g, "_").trim() === cleanHeader);
+      const isExactField = expected.field === cleanHeader;
+      
+      if (isExactField || hasExactSynonym) {
+        suggestions.push({
+          csvColumn: header,
+          suggestedField: expected.field,
+          confidence: "high",
+          reason: `Exact match for standard '${expected.label}'`,
+          isConfirmed: true
+        });
+        mappedExpectedFields.add(expected.field);
+        return;
+      }
+    }
+
+    // Check substring matches
+    for (const expected of EXPECTED_MAPPED_FIELDS) {
+      if (mappedExpectedFields.has(expected.field)) continue;
+      
+      const hasSubstringSynonym = expected.synonyms.some(s => {
+        const cleanS = s.toLowerCase().replace(/[\s_-]+/g, "_").trim();
+        return cleanHeader.includes(cleanS) || cleanS.includes(cleanHeader);
+      });
+      
+      if (hasSubstringSynonym) {
+        suggestions.push({
+          csvColumn: header,
+          suggestedField: expected.field,
+          confidence: "medium",
+          reason: `Fuzzy matching standard '${expected.label}'`,
+          isConfirmed: true
+        });
+        mappedExpectedFields.add(expected.field);
+        return;
+      }
+    }
+  });
+
+  return suggestions;
+}
+
 export function parseCsvContent(text: string, fileName: string): UploadSummary {
   const lines = text.split(/\r?\n/).filter(line => line.trim() !== "");
   if (lines.length === 0) {
@@ -152,32 +226,15 @@ export function parseCsvContent(text: string, fileName: string): UploadSummary {
       detectedColumns: [],
       missingRecommendedColumns: JIRA_RECOMMENDED_FIELDS,
       previewRows: [],
-      dataStatus: "uploaded"
+      dataStatus: "uploaded",
+      suggestedMappings: []
     };
   }
 
   // Parse headers
   const headers = lines[0].split(",").map(item => item.trim().replace(/^["']|["']$/g, ""));
   
-  // Clean headers for mapping
-  const normalizedHeaders = headers.map(h => h.toLowerCase().replace(/[\s_-]+/g, "_"));
-
-  const detectedColumns: string[] = [];
   const previewRows: Record<string, unknown>[] = [];
-
-  // Capture mapped columns
-  headers.forEach((h, i) => {
-    const norm = normalizedHeaders[i];
-    // Find matching Jira recommended fields
-    const matching = JIRA_RECOMMENDED_FIELDS.find(field => {
-      return norm === field || norm.includes(field) || field.includes(norm);
-    });
-    if (matching) {
-      detectedColumns.push(h);
-    } else {
-      detectedColumns.push(h); // Keep anyway
-    }
-  });
 
   // Parse top rows
   const parsedRows = lines.slice(1).map(line => {
@@ -205,9 +262,9 @@ export function parseCsvContent(text: string, fileName: string): UploadSummary {
     return rowObj;
   });
 
-  const missingRecommended = JIRA_RECOMMENDED_FIELDS.filter(field => {
-    return !normalizedHeaders.some(h => h === field || h.includes(field) || field.includes(h));
-  });
+  const suggestions = suggestMappingsForColumns(headers);
+  const mappedTargets = new Set(suggestions.filter(s => s.isConfirmed !== false).map(s => s.suggestedField));
+  const missingRecommended = JIRA_RECOMMENDED_FIELDS.filter(field => !mappedTargets.has(field));
 
   return {
     fileName,
@@ -216,7 +273,8 @@ export function parseCsvContent(text: string, fileName: string): UploadSummary {
     detectedColumns: headers,
     missingRecommendedColumns: missingRecommended,
     previewRows: parsedRows.slice(0, 5),
-    dataStatus: "uploaded"
+    dataStatus: "uploaded",
+    suggestedMappings: suggestions
   };
 }
 
@@ -233,16 +291,15 @@ export function parseJsonContent(text: string, fileName: string): UploadSummary 
         detectedColumns: [],
         missingRecommendedColumns: JIRA_RECOMMENDED_FIELDS,
         previewRows: [],
-        dataStatus: "uploaded"
+        dataStatus: "uploaded",
+        suggestedMappings: []
       };
     }
 
     const firstRowKeys = Object.keys(rows[0]);
-    const normalizedKeys = firstRowKeys.map(k => k.toLowerCase().replace(/[\s_-]+/g, "_"));
-    
-    const missingRecommended = JIRA_RECOMMENDED_FIELDS.filter(field => {
-      return !normalizedKeys.some(k => k === field || k.includes(field) || field.includes(k));
-    });
+    const suggestions = suggestMappingsForColumns(firstRowKeys);
+    const mappedTargets = new Set(suggestions.filter(s => s.isConfirmed !== false).map(s => s.suggestedField));
+    const missingRecommended = JIRA_RECOMMENDED_FIELDS.filter(field => !mappedTargets.has(field));
 
     return {
       fileName,
@@ -251,7 +308,8 @@ export function parseJsonContent(text: string, fileName: string): UploadSummary 
       detectedColumns: firstRowKeys,
       missingRecommendedColumns: missingRecommended,
       previewRows: rows.slice(0, 5),
-      dataStatus: "uploaded"
+      dataStatus: "uploaded",
+      suggestedMappings: suggestions
     };
   } catch (error) {
     return {
@@ -261,7 +319,8 @@ export function parseJsonContent(text: string, fileName: string): UploadSummary 
       detectedColumns: [],
       missingRecommendedColumns: JIRA_RECOMMENDED_FIELDS,
       previewRows: [],
-      dataStatus: "missing"
+      dataStatus: "missing",
+      suggestedMappings: []
     };
   }
 }

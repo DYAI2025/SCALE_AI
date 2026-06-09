@@ -68,6 +68,14 @@ export interface FrameworkReality {
   contradictionHints: string[];
 }
 
+export interface SuggestedMapping {
+  csvColumn: string;
+  suggestedField: string;
+  confidence: "high" | "medium" | "low";
+  reason: string;
+  isConfirmed?: boolean;
+}
+
 export interface UploadSummary {
   fileName: string;
   fileType: string;
@@ -76,6 +84,7 @@ export interface UploadSummary {
   missingRecommendedColumns: string[];
   previewRows: Record<string, unknown>[];
   dataStatus: DataStatus;
+  suggestedMappings?: SuggestedMapping[];
 }
 
 export interface ProductContext {
