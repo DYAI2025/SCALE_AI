@@ -15,19 +15,19 @@ import { DataStatus, CapabilityStatus, Confidence } from "../types";
 // Prototype Disclosure Banner
 export const PrototypeDisclosureBanner: React.FC = () => {
   return (
-    <div id="disclosure-banner" className="bg-[#5A5A40] border-b border-natural-border/30 text-white px-6 py-2 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 font-sans tracking-wide">
+    <div id="disclosure-banner" className="bg-natural-primary border-b border-natural-border/30 text-white px-6 py-2 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 font-sans tracking-wide">
       <div className="flex items-center gap-2">
-        <AlertTriangle className="h-4 w-4 text-amber-200 shrink-0" />
+        <AlertTriangle className="h-4 w-4 text-natural-accent shrink-0" />
         <div>
-          <span className="font-bold tracking-wider text-[#F2F1E9]">CONSULTING LABS PROTOTYPE:</span>
+          <span className="font-bold tracking-wider text-natural-accent">CONSULTING LABS PROTOTYPE:</span>
           {" "}Licensed for click-dummy execution and intake sandbox logic. No external API payloads or LLM keys required.
         </div>
       </div>
       <div className="flex gap-2 shrink-0">
-        <span className="px-2 py-0.5 bg-white/15 border border-white/20 text-[#F2F1E9] rounded font-mono text-[9px] uppercase font-bold tracking-widest">
+        <span className="px-2 py-0.5 bg-white/15 border border-white/20 text-natural-sidebar rounded font-mono text-[9px] uppercase font-bold tracking-widest">
           Offline Sandboxed
         </span>
-        <span className="px-2 py-0.5 bg-[#A67C52] text-white rounded font-mono text-[9px] uppercase font-bold tracking-widest">
+        <span className="px-2 py-0.5 bg-natural-accent text-natural-primary rounded font-mono text-[9px] uppercase font-bold tracking-widest">
           Click-Dummy Active
         </span>
       </div>
@@ -211,7 +211,7 @@ export const EvidenceStatePanel: React.FC<EvidenceStatePanelProps> = ({
   return (
     <div className="bg-white border border-natural-border rounded-lg p-5 shadow-xs space-y-5 h-fit text-natural-text">
       <div>
-        <h3 className="text-xs font-mono uppercase tracking-widest text-[#8A8A70] font-bold mb-1">
+        <h3 className="text-xs font-mono uppercase tracking-widest text-[#FF9932] font-bold mb-1">
           Intake Groundedness
         </h3>
         <div className="flex items-end gap-3">
@@ -269,7 +269,7 @@ export const EvidenceStatePanel: React.FC<EvidenceStatePanelProps> = ({
           <button 
             type="button" 
             onClick={onLoadDemo}
-            className="w-full mt-2.5 py-1.5 px-3 bg-natural-primary hover:bg-[#4A4A38] text-white text-[10px] font-mono uppercase tracking-widest font-bold shadow-xs transition-colors rounded cursor-pointer"
+            className="w-full mt-2.5 py-1.5 px-3 bg-natural-primary hover:bg-[#172B36] text-white text-[10px] font-mono uppercase tracking-widest font-bold shadow-xs transition-colors rounded cursor-pointer border-0"
           >
             Load Demo Company
           </button>

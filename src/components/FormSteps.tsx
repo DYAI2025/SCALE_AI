@@ -1289,7 +1289,7 @@ export const DataSourceUploadPanel: React.FC<StepProps> = ({ state, updateState,
                                   }}
                                   className={`text-[9px] uppercase px-2 py-1 font-mono font-bold rounded cursor-pointer transition-colors border ${
                                     mapping.isConfirmed !== false
-                                      ? "bg-natural-primary text-white border-natural-primary hover:bg-[#4A4A38]"
+                                      ? "bg-natural-primary text-white border-natural-primary hover:bg-[#172B36]"
                                       : "bg-white text-natural-secondary border-natural-border hover:bg-natural-sidebar"
                                   }`}
                                 >
@@ -1994,7 +1994,7 @@ export const InterimAuditSnapshot: React.FC<StepProps> = ({ state, updateState, 
           <button
             type="button"
             onClick={handleExportJsonFile}
-            className="py-2 px-4 bg-natural-primary hover:bg-[#4A4A38] text-white font-mono text-xs uppercase tracking-widest font-bold rounded shadow-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer border-0 animate-pulse-once"
+            className="py-2 px-4 bg-natural-primary hover:bg-[#172B36] text-white font-mono text-xs uppercase tracking-widest font-bold rounded shadow-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer border-0 animate-pulse-once"
           >
             <Download className="h-4 w-4 text-white" />
             <span>Export & Save JSON File</span>
@@ -2003,7 +2003,7 @@ export const InterimAuditSnapshot: React.FC<StepProps> = ({ state, updateState, 
       </div>
 
       {copiedStatus && (
-        <div className="bg-[#4A4A38] text-[#F2F1E9] font-mono text-[10px] p-3 rounded shadow border border-natural-border/20 overflow-y-auto max-h-[150px] animate-fade-in">
+        <div className="bg-natural-text text-natural-bg font-mono text-[10px] p-3 rounded shadow border border-natural-border/20 overflow-y-auto max-h-[150px] animate-fade-in">
           <pre>{JSON.stringify({
             auditCase: state.auditCase,
             registry: state.companyProfile,
@@ -2025,7 +2025,7 @@ export const InterimAuditSnapshot: React.FC<StepProps> = ({ state, updateState, 
           {/* Company details */}
           <div className="p-4 bg-white border border-natural-border rounded-xl space-y-3 shadow-xs">
             <div className="flex justify-between items-start border-b border-natural-border/60 pb-1.5 mb-2">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#4A4A38] flex items-center gap-1">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-natural-primary flex items-center gap-1">
                 <Building2 className="h-3.5 w-3.5 text-natural-accent" />
                 Company Profile
               </h3>
@@ -2060,7 +2060,7 @@ export const InterimAuditSnapshot: React.FC<StepProps> = ({ state, updateState, 
 
           {/* Evidence Baseline state quality score */}
           <div className="p-4 bg-white border border-natural-border rounded-xl space-y-3.5 shadow-xs">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#4A4A38] border-b border-natural-border/60 pb-1.5 mb-2">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-natural-primary border-b border-natural-border/60 pb-1.5 mb-2">
               Evidence State
             </h3>
             
@@ -2098,7 +2098,7 @@ export const InterimAuditSnapshot: React.FC<StepProps> = ({ state, updateState, 
           
           <div className="p-4 bg-white border border-natural-border rounded-xl space-y-3 shadow-xs min-h-[440px] flex flex-col justify-between">
             <div className="space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#4A4A38] border-b border-natural-border/60 pb-1.5 mb-2">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-natural-primary border-b border-natural-border/60 pb-1.5 mb-2">
                 Work System Reality
               </h3>
 
@@ -2153,7 +2153,7 @@ export const InterimAuditSnapshot: React.FC<StepProps> = ({ state, updateState, 
                       {[1, 2, 3, 4, 5].map(step => (
                         <span 
                           key={step} 
-                          className={`w-2 h-2 rounded-full ${step <= (val as number) ? "bg-[#5A5A40]" : "bg-[#E6E1D6]"}`} 
+                          className={`w-2 h-2 rounded-full ${step <= (val as number) ? "bg-natural-primary" : "bg-natural-sidebar"}`} 
                         />
                       ))}
                     </div>
@@ -2170,7 +2170,7 @@ export const InterimAuditSnapshot: React.FC<StepProps> = ({ state, updateState, 
           
           <div className="p-5 bg-natural-primary text-white rounded-xl space-y-3.5 shadow-xs min-h-[440px] flex flex-col justify-between">
             <div className="space-y-1">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-[#F2F1E9]/80 font-bold block leading-none">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-white/80 font-bold block leading-none">
                 Cynefin Hypothesis
               </span>
               <h3 className="text-3xl font-serif italic text-white flex justify-between items-center">
@@ -2180,23 +2180,23 @@ export const InterimAuditSnapshot: React.FC<StepProps> = ({ state, updateState, 
             </div>
 
             {/* Sensed hypothesis reason */}
-            <div className="bg-[#4A4A38]/70 p-3 rounded-lg border border-white/10 text-xs leading-relaxed font-sans space-y-2 text-[#F2F1E9]">
+            <div className="bg-[#172B36]/80 p-3 rounded-lg border border-white/10 text-xs leading-relaxed font-sans space-y-2 text-white/90">
               <p className="font-semibold text-white">Analysis Basis:</p>
               <p className="text-[11px] font-light">
                 {assessment.reasoning[0] || "High uncertainty and high cross-team interdependencies suggest discovery-based agile delivery models."}
               </p>
-              <div className="text-[10px] text-[#A67C52] font-semibold tracking-wider font-sans uppercase">
+              <div className="text-[10px] text-natural-accent font-semibold tracking-wider font-sans uppercase">
                 Confidence Factor: {assessment.confidence.toUpperCase()}
               </div>
             </div>
 
             {/* Counter hypothesis card */}
-            <div className="bg-[#A67C52]/20 p-3 rounded-lg border border-[#A67C52]/30 text-[11px] font-sans leading-relaxed text-[#FDFBF7]">
-              <span className="text-[9px] font-mono uppercase tracking-widest text-amber-200 font-bold block mb-1">Vulnerability Risk Vector</span>
+            <div className="bg-natural-accent/15 p-3 rounded-lg border border-natural-accent/30 text-[11px] font-sans leading-relaxed text-white">
+              <span className="text-[9px] font-mono uppercase tracking-widest text-natural-accent font-bold block mb-1">Vulnerability Risk Vector</span>
               {assessment.counterHypothesis || "Over-indexing on rigid framework compliance risks decoupling teams from real user feedback loops."}
             </div>
 
-            <div className="border-t border-white/10 pt-3 text-[10px] text-[#F2F1E9]/60 font-mono text-center leading-none">
+            <div className="border-t border-white/10 pt-3 text-white/60 font-mono text-center leading-none">
               Treated as conceptual sensemaking indicator.
             </div>
           </div>
@@ -2207,7 +2207,7 @@ export const InterimAuditSnapshot: React.FC<StepProps> = ({ state, updateState, 
 
       {/* LOWER SECTION: AI DERIVED HYPOTHESES CARDS */}
       <div className="space-y-4">
-        <h3 className="text-sm font-mono uppercase tracking-widest text-natural-primary font-bold border-l-2 border-[#5A5A40] pl-2">
+        <h3 className="text-sm font-mono uppercase tracking-widest text-natural-primary font-bold border-l-2 border-natural-accent pl-2">
           AI Derived Interim Core Hypotheses ({rulesHypotheses.length})
         </h3>
         
@@ -2241,7 +2241,7 @@ export const InterimAuditSnapshot: React.FC<StepProps> = ({ state, updateState, 
                     {hyp.limitation}
                   </div>
                   <div className="text-[10px] text-natural-primary font-medium">
-                    <span className="font-mono text-[9px] uppercase tracking-wider text-[#A67C52] block leading-none mb-0.5">Next Validation Step:</span>
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-natural-secondary block leading-none mb-0.5">Next Validation Step:</span>
                     {hyp.nextValidationStep}
                   </div>
                 </div>
@@ -2265,7 +2265,7 @@ export const InterimAuditSnapshot: React.FC<StepProps> = ({ state, updateState, 
           {nextQuestions.map((q) => {
             const badgeColor = {
               high: "bg-rose-50 text-rose-800 border-rose-200",
-              medium: "bg-[#A67C52]/10 text-natural-accent border-[#A67C52]/20",
+              medium: "bg-natural-accent/10 text-natural-accent border-natural-accent/30",
               low: "bg-natural-sidebar text-natural-secondary border-natural-border"
             }[q.priority];
 

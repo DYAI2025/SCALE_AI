@@ -5,18 +5,18 @@
   --font-serif: "Playfair Display", Georgia, serif;
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
-  --color-natural-bg: #F9F8F4;
-  --color-natural-sidebar: #F2F1E9;
-  --color-natural-border: #E6E1D6;
-  --color-natural-primary: #5A5A40;
-  --color-natural-secondary: #8A8A70;
-  --color-natural-text: #4A4A38;
-  --color-natural-accent: #A67C52;
+  --color-natural-bg: #F1F6F4;
+  --color-natural-sidebar: #D9E8E2;
+  --color-natural-border: #BCDCD0;
+  --color-natural-primary: #114C5A;
+  --color-natural-secondary: #FF9932;
+  --color-natural-text: #172B36;
+  --color-natural-accent: #FFC801;
 }
 
-/* Global modifications for Natural Tones */
+/* Global modifications for Design Palette */
 body {
-  background-color: #F9F8F4;
-  color: #4A4A38;
+  background-color: #F1F6F4;
+  color: #172B36;
   font-family: var(--font-sans);
 }

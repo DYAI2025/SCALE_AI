@@ -256,11 +256,11 @@ export default function App() {
         <header className="bg-natural-primary text-white border-b border-natural-border shrink-0">
           <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <span className="p-1.5 bg-[#4A4A38] rounded">
-                <Workflow className="h-5 w-5 text-white" />
+              <span className="p-1.5 bg-white/10 rounded">
+                <Workflow className="h-5 w-5 text-natural-accent" />
               </span>
               <div>
-                <span className="text-[10px] font-mono tracking-wider uppercase text-[#E6E1D6] block h-3">
+                <span className="text-[10px] font-mono tracking-wider uppercase text-natural-accent block h-3">
                   Consulting Sequence Sandbox
                 </span>
                 <span className="font-sans font-black tracking-tight text-white uppercase text-sm">
@@ -270,14 +270,14 @@ export default function App() {
             </div>
 
             <div className="flex items-center gap-3">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[10px] font-mono uppercase text-[#E6E1D6] font-bold hidden sm:inline">
+              <span className="h-2 w-2 rounded-full bg-natural-accent animate-pulse" />
+              <span className="text-[10px] font-mono uppercase text-natural-sidebar font-bold hidden sm:inline">
                 ESTABLISHED LOCAL SESSION
               </span>
               <button
                 onClick={handleReset}
                 type="button"
-                className="py-1 px-2.5 text-[10px] font-mono uppercase bg-[#4A4A38] font-semibold border border-[#8A8A70]/30 hover:border-white hover:bg-[#3A3A2C] transition-colors rounded text-slate-100 cursor-pointer"
+                className="py-1 px-2.5 text-[10px] font-mono uppercase bg-white/10 font-semibold border border-white/20 hover:border-white hover:bg-white/20 transition-colors rounded text-white cursor-pointer"
               >
                 Clear Sandbox
               </button>
