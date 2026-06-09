@@ -398,7 +398,7 @@ export const CompanyResolver: React.FC<StepProps> = ({ state, updateState, onNex
 
         {sourceMode.includes("adapter-ready") && (
           <div className="bg-cyan-50 border border-cyan-200 text-cyan-800 rounded p-3 text-xs leading-normal">
-            <span className="font-bold">INTEGRATION SCOPE DESIGN:</span> OpenCorporates schema binding is planned. In active builds, this requests legal addresses globally via OAuth tokens. Currently sandbox is isolated.
+            <span className="font-bold">INTEGRATION SCOPE DESIGN:</span> OpenCorporates registry schema placeholder. No live network requests or external connections are made by this prototype. This is a static sandbox click-dummy representation.
           </div>
         )}
 
@@ -1050,7 +1050,7 @@ export const DataSourceUploadPanel: React.FC<StepProps> = ({ state, updateState,
               </span>
             </h3>
             <p className="text-[11px] text-slate-500 leading-normal">
-              Direct API tunnel retrieves real cycle-time values. Access token scopes conform to reader restrictions.
+              Simulated API connector placeholder. Active API connections are disabled in this sandbox; all diagnostics rely entirely on local user file uploads.
             </p>
             <div className="flex gap-2.5">
               <button

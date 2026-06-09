@@ -36,20 +36,40 @@ A locally-runnable, highly polished clickable frontend prototype for an AI-assis
 
 ---
 
-## What is click-dummy
+## Data & Feature Truth Table
 
-- **Jira OAuth**: Real OAuth redirection workflows are simulated inside offline notices.
-- **OpenCorporates live API**: The commercial indexing is bypassed.
-- **German Unternehmensregister**: Instructions are provided to look up identifiers manually inside an off-screen portal.
-- **Real LLM calls**: No active model keys are required.
-- **Backend persistence**: Client session states are held cleanly inside LocalStorage and local memory.
-- **Final report export**: The summary snapshot copies a structured JSON to the clipboards.
+| Feature / Workspace Coordinate | Operational Status | Groundedness / Code Mechanism | Details |
+| :--- | :--- | :--- | :--- |
+| **Company Identity Search** | **Simulated & Manual** | Local deterministic mapping rules (`demo` or `manual` data status) | Avoids external commercial API keys and bypasses OpenCorporates indexing. |
+| **German Unternehmensregister** | **External Linkout Only** | Explicit portal hyperlink provided in UI | Offloads register checks safely to separate manual tab. No hidden integrations. |
+| **Jira Integration** | **Click-Dummy & File Upload** | Local client-side file reading (CSV/JSON upload) with simulated inline notices | Active Jira accounts and OAuth redirections are deactivated. Processes datasets entirely in browser memory. |
+| **Heuristic Scoring Models** | **Local Rule-Based Process** | Pure deterministic scoring engine (`src/utils/auditLogic.ts`) | Calculates Cynefin assessments, contradictions, and data quality on local state. No LLM prompts or backend payloads. |
+| **Backend Persistence** | **Offline Sandbox** | Standard client-side state / LocalStorage | Entirely local to the client session. Zero automated background network data synchronization. |
+| **Audit Snapshot Export** | **Client-Side File Generation** | Triggerable JSON file download or text copy | Client-side creation only. No remote server-side document rendering. |
 
 ---
 
 ## Data truth policy
 
 No demo, mock, inferred, or click-dummy data is presented as real. Clear state chips (`real`, `manual`, `uploaded`, `demo`, `inferred`, `missing`, `adapter-ready`, `click-dummy`) specify source groundedness across all data tables and dashboards.
+
+---
+
+## QA Checklist Status
+
+- [x] **Truth-Boundary Copy Auditing**: Misleading telemetry and server/API connectivity claims removed.
+- [x] **Demo-Provenance Verification**: All demo seed profile attributes updated with explicit local testing origin tags.
+- [x] **Unit Testing Implementation**: Introduced `vitest` unit tests checking all principal deterministic scoring algorithms.
+- [x] **Local & Offline Sovereignty**: Sandboxed client execution strictly preserved as local-by-default.
+
+---
+
+## Unresolved Deferred Gaps
+
+- **Jira OAuth Consent**: Direct integration with individual tenant workflows is in mock mode.
+- **Enterprise DB Connector**: Integration with relational tables or persistent clouds is omitted to maintain isolated offline execution.
+- **OpenCorporates Direct API**: Automatic payload resolution remains mocked with local presets.
+- **Server-Side PDF Reporting**: Deferred to client-side JSON downloads for absolute privacy.
 
 ---
 
@@ -61,3 +81,4 @@ No demo, mock, inferred, or click-dummy data is presented as real. Clear state c
 4. Add company data adapter.
 5. Add LLM provider abstraction.
 6. Add audit ledger.
+

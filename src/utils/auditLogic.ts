@@ -16,43 +16,43 @@ export function resolveDemoCompany(): CompanyProfile {
       value: "Acme Flow Systems GmbH",
       dataStatus: "demo",
       confidence: "high",
-      sourceNote: "Prototype demo seed data. Confidence Score: 0.72"
+      sourceNote: "Offline prototype demo-provenance seed profile."
     },
     legalForm: {
       value: "GmbH",
       dataStatus: "demo",
       confidence: "high",
-      sourceNote: "Prototype demo seed data."
+      sourceNote: "Offline prototype demo-provenance seed profile."
     },
     location: {
       value: "Cologne, Germany",
       dataStatus: "demo",
       confidence: "high",
-      sourceNote: "Prototype demo seed data."
+      sourceNote: "Offline prototype demo-provenance seed profile."
     },
     industry: {
       value: "B2B SaaS / Industrial Workflow Software",
       dataStatus: "demo",
       confidence: "medium",
-      sourceNote: "Prototype demo seed data."
+      sourceNote: "Offline prototype demo-provenance seed profile."
     },
     website: {
       value: "https://example.com",
       dataStatus: "demo",
       confidence: "high",
-      sourceNote: "Prototype demo seed data."
+      sourceNote: "Offline prototype demo-provenance seed profile."
     },
     employeeCount: {
       value: 420,
       dataStatus: "demo",
       confidence: "medium",
-      sourceNote: "Estimated from company public registry. Confidence Score: 0.72"
+      sourceNote: "Simulated count from offline demo-provenance seed profile."
     },
     registerId: {
       value: "HRB 998827",
       dataStatus: "demo",
       confidence: "high",
-      sourceNote: "Demo mock registry ID."
+      sourceNote: "Simulated registry ID for click-dummy execution."
     }
   };
 }
