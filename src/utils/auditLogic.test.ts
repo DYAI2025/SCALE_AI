@@ -8,7 +8,8 @@ import {
   calculateCynefinHypothesis,
   generateInterimHypotheses,
   generateMissingDataQuestions,
-  calculateDataQuality
+  calculateDataQuality,
+  executeMockLlmCall
 } from "./auditLogic";
 import { AuditState, ProductContext, FrameworkReality } from "../types";
 
@@ -168,4 +169,25 @@ describe("auditLogic heuristic engine", () => {
     expect(quality.availableCount).toBe(7);
     expect(quality.scorePercent).toBe(88);
   });
+
+  it("handles test_connection tasks for mock provider", () => {
+    const res = executeMockLlmCall({ task: "test_connection", provider: "mock" });
+    expect(res.ok).toBe(true);
+    expect(res.provider).toBe("mock");
+    expect(res.message).toBe("Mock provider is working. No external LLM call was made.");
+  });
+
+  it("handles generate_audit_section tasks according to reports contract", () => {
+    const res = executeMockLlmCall({
+      task: "generate_audit_section",
+      evidence_refs: ["EV-901", "EV-902"],
+      section_type: "work_system_coherence"
+    });
+    expect(res.section_id).toBe("mock_work_system_coherence");
+    expect(res.title).toBe("Work System Coherence");
+    expect(res.confidence).toBe("medium");
+    expect(res.evidence_refs).toContain("EV-901");
+    expect(res.visualization.type).toBe("bar_chart");
+  });
 });
+

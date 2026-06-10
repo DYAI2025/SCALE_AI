@@ -151,3 +151,108 @@ export interface AuditState {
   productContext: ProductContext;
   cynefinAssessment: CynefinAssessment;
 }
+
+export type LlmProvider = "mock" | "gemini" | "openrouter" | "anthropic" | "openai";
+
+export type RuntimeMode =
+  | "mock-only"
+  | "browser-prototype"
+  | "supabase-edge-function";
+
+export type ProviderStatus =
+  | "configured"
+  | "not-configured"
+  | "adapter-ready"
+  | "unsafe-browser-mode"
+  | "mock-only";
+
+export interface LlmProviderConfig {
+  provider: LlmProvider;
+  runtimeMode: RuntimeMode;
+  modelName: string;
+  baseUrl?: string;
+  apiKey?: string;
+  rememberApiKey: boolean;
+  temperature: number;
+  maxOutputTokens: number;
+  requireStructuredJson: boolean;
+  storeLlmRunMetadata: boolean;
+  allowCustomerData: boolean;
+  allowSensitiveData: boolean;
+  status: ProviderStatus;
+}
+
+export interface SupabaseConfig {
+  supabaseUrl: string;
+  anonKey: string;
+  edgeFunctionBaseUrl?: string;
+  storageBucket: string;
+  rlsReminderEnabled: boolean;
+  connectionStatus: "not-tested" | "mock-ok" | "connected" | "failed";
+}
+
+export type DataSourceKind =
+  | "jira_csv_json"
+  | "jira_oauth"
+  | "confluence"
+  | "pdf"
+  | "docx"
+  | "pptx"
+  | "xlsx"
+  | "csv"
+  | "miro"
+  | "github_gitlab"
+  | "company_data"
+  | "manual_notes";
+
+export interface DataSourceDefault {
+  kind: DataSourceKind;
+  enabled: boolean;
+  defaultStatus: "enabled" | "disabled" | "later";
+  ingestionMode: "upload" | "api" | "adapter-ready" | "manual" | "not-built";
+  sensitivity: "low" | "medium" | "high";
+  prototypeSupportLevel: "works-now" | "mock-only" | "adapter-ready" | "not-built";
+}
+
+export interface TraceabilityPolicy {
+  requireEvidenceForEveryClaim: boolean;
+  requireSourceReferences: boolean;
+  requireAssumptionsList: boolean;
+  requireKpiOrObservableSignal: boolean;
+  requireBenchmarkOrTbd: boolean;
+  requireConfidenceRating: boolean;
+  requireLimitationStatement: boolean;
+  requireCounterHypothesis: boolean;
+  requireVisualization: boolean;
+  requireHumanReviewBeforeFinalReport: boolean;
+  blockFinalReportWhenUntracedClaimsExist: boolean;
+}
+
+export interface AuditDefaults {
+  auditMode: "Automated Evidence Audit" | "Consultant-Validated Audit";
+  primaryEvidenceSource: "Jira" | "Documents" | "Mixed";
+  defaultTimeWindowDays: 90 | 180 | 365;
+  defaultLanguage: "German" | "English";
+  defaultReportAudience:
+    | "consultant internal"
+    | "client leadership"
+    | "technical leadership";
+  defaultOutputStyle:
+    | "evidence-first"
+    | "management narrative"
+    | "technical audit";
+  defaultVisualizationStyle:
+    | "clean enterprise"
+    | "analytical dashboard"
+    | "executive report";
+}
+
+export interface AppSettings {
+  llmProvider: LlmProviderConfig;
+  supabase: SupabaseConfig;
+  dataSources: DataSourceDefault[];
+  traceabilityPolicy: TraceabilityPolicy;
+  auditDefaults: AuditDefaults;
+  updatedAt: string;
+}
+

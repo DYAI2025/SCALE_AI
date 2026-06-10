@@ -10,9 +10,10 @@ import {
   Workflow, 
   CheckSquare, 
   Clock, 
-  FileText
+  FileText,
+  Settings
 } from "lucide-react";
-import { AuditState } from "./types";
+import { AuditState, AppSettings } from "./types";
 import { 
   PrototypeDisclosureBanner, 
   Stepper, 
@@ -28,6 +29,7 @@ import {
   CynefinAssessmentPanel, 
   InterimAuditSnapshot 
 } from "./components/FormSteps";
+import { SettingsCenter } from "./components/SettingsCenter";
 import { resolveDemoCompany, calculateDataQuality } from "./utils/auditLogic";
 
 const STORAGE_KEY = "AgileAuditIntake_state";
@@ -142,6 +144,71 @@ const STEP_NAMES = [
   "Interim Snapshot"
 ];
 
+const SETTINGS_STORAGE_KEY = "scale_ai_audit_settings_v1";
+
+const DEFAULT_SETTINGS: AppSettings = {
+  llmProvider: {
+    provider: "mock",
+    runtimeMode: "mock-only",
+    modelName: "mock-gpt-v1",
+    baseUrl: "",
+    apiKey: "",
+    rememberApiKey: false,
+    temperature: 0.2,
+    maxOutputTokens: 2048,
+    requireStructuredJson: true,
+    storeLlmRunMetadata: true,
+    allowCustomerData: false,
+    allowSensitiveData: false,
+    status: "mock-only"
+  },
+  supabase: {
+    supabaseUrl: "",
+    anonKey: "",
+    edgeFunctionBaseUrl: "",
+    storageBucket: "audit-evidence",
+    rlsReminderEnabled: true,
+    connectionStatus: "not-tested"
+  },
+  dataSources: [
+    { kind: "jira_csv_json", enabled: true, defaultStatus: "enabled", ingestionMode: "upload", sensitivity: "high", prototypeSupportLevel: "works-now" },
+    { kind: "jira_oauth", enabled: true, defaultStatus: "later", ingestionMode: "api", sensitivity: "high", prototypeSupportLevel: "adapter-ready" },
+    { kind: "confluence", enabled: false, defaultStatus: "later", ingestionMode: "api", sensitivity: "high", prototypeSupportLevel: "not-built" },
+    { kind: "pdf", enabled: true, defaultStatus: "enabled", ingestionMode: "upload", sensitivity: "medium", prototypeSupportLevel: "adapter-ready" },
+    { kind: "docx", enabled: true, defaultStatus: "enabled", ingestionMode: "upload", sensitivity: "medium", prototypeSupportLevel: "adapter-ready" },
+    { kind: "pptx", enabled: true, defaultStatus: "enabled", ingestionMode: "upload", sensitivity: "medium", prototypeSupportLevel: "adapter-ready" },
+    { kind: "xlsx", enabled: true, defaultStatus: "enabled", ingestionMode: "upload", sensitivity: "medium", prototypeSupportLevel: "adapter-ready" },
+    { kind: "csv", enabled: true, defaultStatus: "enabled", ingestionMode: "upload", sensitivity: "medium", prototypeSupportLevel: "works-now" },
+    { kind: "miro", enabled: true, defaultStatus: "later", ingestionMode: "api", sensitivity: "medium", prototypeSupportLevel: "adapter-ready" },
+    { kind: "github_gitlab", enabled: true, defaultStatus: "later", ingestionMode: "api", sensitivity: "medium", prototypeSupportLevel: "adapter-ready" },
+    { kind: "company_data", enabled: true, defaultStatus: "later", ingestionMode: "api", sensitivity: "medium", prototypeSupportLevel: "adapter-ready" },
+    { kind: "manual_notes", enabled: true, defaultStatus: "enabled", ingestionMode: "manual", sensitivity: "low", prototypeSupportLevel: "works-now" }
+  ],
+  traceabilityPolicy: {
+    requireEvidenceForEveryClaim: true,
+    requireSourceReferences: true,
+    requireAssumptionsList: true,
+    requireKpiOrObservableSignal: true,
+    requireBenchmarkOrTbd: true,
+    requireConfidenceRating: true,
+    requireLimitationStatement: true,
+    requireCounterHypothesis: true,
+    requireVisualization: true,
+    requireHumanReviewBeforeFinalReport: true,
+    blockFinalReportWhenUntracedClaimsExist: true
+  },
+  auditDefaults: {
+    auditMode: "Automated Evidence Audit",
+    primaryEvidenceSource: "Jira",
+    defaultTimeWindowDays: 180,
+    defaultLanguage: "German",
+    defaultReportAudience: "consultant internal",
+    defaultOutputStyle: "evidence-first",
+    defaultVisualizationStyle: "analytical dashboard"
+  },
+  updatedAt: new Date().toISOString()
+};
+
 export default function App() {
   const [state, setState] = useState<AuditState>(() => {
     try {
@@ -155,6 +222,20 @@ export default function App() {
     return INITIAL_STATE;
   });
 
+  const [settings, setSettings] = useState<AppSettings>(() => {
+    try {
+      const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch (e) {
+      console.warn("Failed to load settings from LocalStorage", e);
+    }
+    return DEFAULT_SETTINGS;
+  });
+
+  const [showSettings, setShowSettings] = useState<boolean>(false);
+
   const [currentStep, setCurrentStep] = useState<number>(0);
 
   useEffect(() => {
@@ -164,6 +245,14 @@ export default function App() {
       console.warn("Failed to save state to LocalStorage", e);
     }
   }, [state]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+    } catch (e) {
+      console.warn("Failed to save settings to LocalStorage", e);
+    }
+  }, [settings]);
 
   const updateState = (updater: (prev: AuditState) => void) => {
     setState(prev => {
@@ -275,6 +364,18 @@ export default function App() {
                 ESTABLISHED LOCAL SESSION
               </span>
               <button
+                onClick={() => setShowSettings(!showSettings)}
+                type="button"
+                className={`py-1 px-2.5 text-[10px] font-mono uppercase font-semibold border transition-colors rounded cursor-pointer inline-flex items-center gap-1 ${
+                  showSettings
+                    ? "bg-natural-accent border-natural-accent text-natural-primary hover:bg-natural-accent/90"
+                    : "bg-white/10 text-white border-white/20 hover:border-white hover:bg-white/20"
+                }`}
+              >
+                <Settings className={`h-3 w-3 ${showSettings ? "animate-spin" : ""}`} />
+                <span>{showSettings ? "Intake Flow" : "System Settings"}</span>
+              </button>
+              <button
                 onClick={handleReset}
                 type="button"
                 className="py-1 px-2.5 text-[10px] font-mono uppercase bg-white/10 font-semibold border border-white/20 hover:border-white hover:bg-white/20 transition-colors rounded text-white cursor-pointer"
@@ -289,18 +390,27 @@ export default function App() {
         <PrototypeDisclosureBanner />
 
         {/* The Progress Tracking Stepper */}
-        <Stepper
-          currentStep={currentStep}
-          totalSteps={STEP_NAMES.length}
-          steps={STEP_NAMES}
-          completedSteps={completedSteps}
-          setStep={setStepIdx}
-        />
+        {!showSettings && (
+          <Stepper
+            currentStep={currentStep}
+            totalSteps={STEP_NAMES.length}
+            steps={STEP_NAMES}
+            completedSteps={completedSteps}
+            setStep={setStepIdx}
+          />
+        )}
       </div>
 
       {/* CORE FRAME GRID LAYOUT */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-6 font-sans">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {showSettings ? (
+          <SettingsCenter 
+            settings={settings} 
+            onSaveSettings={setSettings} 
+            onClose={() => setShowSettings(false)} 
+          />
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           {/* Active Worksite Forms Area */}
           <div className={`${currentStep === 7 ? "lg:col-span-12" : "lg:col-span-8"} bg-white border border-natural-border shadow-sm rounded-lg p-6 min-h-[500px] flex flex-col justify-between`}>
@@ -386,6 +496,7 @@ export default function App() {
           )}
 
         </div>
+        )}
       </main>
 
       {/* FOOTER METRICS SEGMENT */}

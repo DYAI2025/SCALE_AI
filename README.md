@@ -2,6 +2,37 @@
 
 A locally-runnable, highly polished clickable frontend prototype for an AI-assisted Agile, Change, and Framework-Fit audit intake and early reasoning tool.
 
+## Iteration 1: Settings Center + Traceability Foundation
+
+### What this iteration implements
+- **Settings Center**: Sidebar controller coordinating project and model states.
+- **LLM Provider configuration**: Mappings targeting Gemimi, OpenAI, Anthropic, OpenRouter, and local Mock.
+- **Supabase configuration UI**: Connection coordinates forms with secure client builders.
+- **SQL schema preview**: Renders expected database tables structures inline block.
+- **Data source defaults**: Multi-format adapter support matrices tracking files upload status.
+- **Traceability policy**: Verification contracts enforcing evidence, KPIs, and counter-hypotheses.
+- **Audit defaults**: Set of initial assessment windows, languages, output formats, and audiences.
+- **Prototype safety status**: Realtime checks monitoring direct browser key exposures and RLS.
+- **Mock LLM provider**: Simulates connection handshakes and draft section contract synthesis offline.
+- **Local settings persistence**: Updates saved reliably under `scale_ai_audit_settings_v1`.
+
+### What works
+- Configure mock provider and credentials metadata.
+- Configure Supabase coordinates safely without exposing private key headers.
+- Enforce strict traceability checklists.
+- Clear sandbox state back to defaults.
+- View real-time security alerts.
+
+### What is not built yet
+- Real Jira OAuth connection queries.
+- Automated migrations executing remote DDL scripts directly from frontend panels.
+- Live LLM API calls outside sandboxed mock modes.
+
+### Security Note
+Do not use real customer data in browser-prototype API key mode. Do not store service-role keys in the frontend. Use Supabase Edge Functions for production provider calls.
+
+---
+
 ## How to run
 
 1. Install dependencies (if needed):
