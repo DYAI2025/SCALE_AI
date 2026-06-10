@@ -256,3 +256,122 @@ export interface AppSettings {
   updatedAt: string;
 }
 
+export type EvidenceSourceType =
+  | "jira"
+  | "confluence"
+  | "document"
+  | "spreadsheet"
+  | "miro"
+  | "github_gitlab"
+  | "company_data"
+  | "manual_note"
+  | "llm_output"
+  | "derived_metric";
+
+export type EvidenceStatus =
+  | "raw"
+  | "normalized"
+  | "derived"
+  | "reviewed"
+  | "rejected"
+  | "missing";
+
+export type EvidenceStrength =
+  | "direct"
+  | "strong"
+  | "moderate"
+  | "weak"
+  | "missing";
+
+export interface EvidenceItem {
+  id: string;
+  auditProjectId: string;
+  title: string;
+  sourceType: EvidenceSourceType;
+  sourceRef?: string;
+  sourceLabel: string;
+  status: EvidenceStatus;
+  strength: EvidenceStrength;
+  dataStatus: DataStatus;
+  summary: string;
+  extractedFacts: string[];
+  limitations: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type AuditVariableCategory =
+  | "work_system_coherence"
+  | "flow_visibility"
+  | "dependency_load"
+  | "governance_friction"
+  | "framework_reality"
+  | "agile_fit"
+  | "data_quality";
+
+export interface AuditVariable {
+  id: string;
+  auditProjectId: string;
+  category: AuditVariableCategory;
+  name: string;
+  value: string | number | boolean;
+  unit?: string;
+  measurementMethod: string;
+  evidenceRefs: string[];
+  confidence: "high" | "medium" | "low";
+  benchmarkRef?: string | "TBD";
+  interpretation: string;
+  counterHypothesis: string;
+  limitation: string;
+  recommendedVisualization:
+    | "bar_chart"
+    | "line_chart"
+    | "network_graph"
+    | "heatmap"
+    | "radar"
+    | "timeline"
+    | "table"
+    | "evidence_graph";
+}
+
+export type ReportSectionStatus =
+  | "draft"
+  | "blocked_missing_evidence"
+  | "ready_for_review"
+  | "reviewed";
+
+export interface ReportSectionContract {
+  id: string;
+  auditProjectId: string;
+  title: string;
+  sectionType:
+    | "company_context"
+    | "jira_operating_model"
+    | "work_system_coherence"
+    | "flow_reality"
+    | "dependency_map"
+    | "governance_friction"
+    | "framework_fit"
+    | "h1_h2_h3_roadmap"
+    | "next_change_slice";
+  narrative: string;
+  evidenceRefs: string[];
+  assumptions: string[];
+  kpiRefs: string[];
+  benchmarkRefs: string[];
+  confidence: "high" | "medium" | "low";
+  limitation: string;
+  counterHypothesis: string;
+  visualizationType:
+    | "bar_chart"
+    | "line_chart"
+    | "network_graph"
+    | "heatmap"
+    | "radar"
+    | "timeline"
+    | "table"
+    | "evidence_graph";
+  humanReviewStatus: "required" | "completed" | "not_required";
+  status: ReportSectionStatus;
+}
+

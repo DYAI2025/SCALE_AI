@@ -11,7 +11,8 @@ import {
   CheckSquare, 
   Clock, 
   FileText,
-  Settings
+  Settings,
+  GitBranch
 } from "lucide-react";
 import { AuditState, AppSettings } from "./types";
 import { 
@@ -19,6 +20,8 @@ import {
   Stepper, 
   EvidenceStatePanel 
 } from "./components/CommonUI";
+import { TraceabilityLab } from "./components/TraceabilityLab";
+import { DEFAULT_SETTINGS } from "./config/defaultSettings";
 import { 
   AuditSetupForm, 
   CompanyResolver, 
@@ -146,69 +149,6 @@ const STEP_NAMES = [
 
 const SETTINGS_STORAGE_KEY = "scale_ai_audit_settings_v1";
 
-const DEFAULT_SETTINGS: AppSettings = {
-  llmProvider: {
-    provider: "mock",
-    runtimeMode: "mock-only",
-    modelName: "mock-gpt-v1",
-    baseUrl: "",
-    apiKey: "",
-    rememberApiKey: false,
-    temperature: 0.2,
-    maxOutputTokens: 2048,
-    requireStructuredJson: true,
-    storeLlmRunMetadata: true,
-    allowCustomerData: false,
-    allowSensitiveData: false,
-    status: "mock-only"
-  },
-  supabase: {
-    supabaseUrl: "",
-    anonKey: "",
-    edgeFunctionBaseUrl: "",
-    storageBucket: "audit-evidence",
-    rlsReminderEnabled: true,
-    connectionStatus: "not-tested"
-  },
-  dataSources: [
-    { kind: "jira_csv_json", enabled: true, defaultStatus: "enabled", ingestionMode: "upload", sensitivity: "high", prototypeSupportLevel: "works-now" },
-    { kind: "jira_oauth", enabled: true, defaultStatus: "later", ingestionMode: "api", sensitivity: "high", prototypeSupportLevel: "adapter-ready" },
-    { kind: "confluence", enabled: false, defaultStatus: "later", ingestionMode: "api", sensitivity: "high", prototypeSupportLevel: "not-built" },
-    { kind: "pdf", enabled: true, defaultStatus: "enabled", ingestionMode: "upload", sensitivity: "medium", prototypeSupportLevel: "adapter-ready" },
-    { kind: "docx", enabled: true, defaultStatus: "enabled", ingestionMode: "upload", sensitivity: "medium", prototypeSupportLevel: "adapter-ready" },
-    { kind: "pptx", enabled: true, defaultStatus: "enabled", ingestionMode: "upload", sensitivity: "medium", prototypeSupportLevel: "adapter-ready" },
-    { kind: "xlsx", enabled: true, defaultStatus: "enabled", ingestionMode: "upload", sensitivity: "medium", prototypeSupportLevel: "adapter-ready" },
-    { kind: "csv", enabled: true, defaultStatus: "enabled", ingestionMode: "upload", sensitivity: "medium", prototypeSupportLevel: "works-now" },
-    { kind: "miro", enabled: true, defaultStatus: "later", ingestionMode: "api", sensitivity: "medium", prototypeSupportLevel: "adapter-ready" },
-    { kind: "github_gitlab", enabled: true, defaultStatus: "later", ingestionMode: "api", sensitivity: "medium", prototypeSupportLevel: "adapter-ready" },
-    { kind: "company_data", enabled: true, defaultStatus: "later", ingestionMode: "api", sensitivity: "medium", prototypeSupportLevel: "adapter-ready" },
-    { kind: "manual_notes", enabled: true, defaultStatus: "enabled", ingestionMode: "manual", sensitivity: "low", prototypeSupportLevel: "works-now" }
-  ],
-  traceabilityPolicy: {
-    requireEvidenceForEveryClaim: true,
-    requireSourceReferences: true,
-    requireAssumptionsList: true,
-    requireKpiOrObservableSignal: true,
-    requireBenchmarkOrTbd: true,
-    requireConfidenceRating: true,
-    requireLimitationStatement: true,
-    requireCounterHypothesis: true,
-    requireVisualization: true,
-    requireHumanReviewBeforeFinalReport: true,
-    blockFinalReportWhenUntracedClaimsExist: true
-  },
-  auditDefaults: {
-    auditMode: "Automated Evidence Audit",
-    primaryEvidenceSource: "Jira",
-    defaultTimeWindowDays: 180,
-    defaultLanguage: "German",
-    defaultReportAudience: "consultant internal",
-    defaultOutputStyle: "evidence-first",
-    defaultVisualizationStyle: "analytical dashboard"
-  },
-  updatedAt: new Date().toISOString()
-};
-
 export default function App() {
   const [state, setState] = useState<AuditState>(() => {
     try {
@@ -235,6 +175,7 @@ export default function App() {
   });
 
   const [showSettings, setShowSettings] = useState<boolean>(false);
+  const [showTraceability, setShowTraceability] = useState<boolean>(false);
 
   const [currentStep, setCurrentStep] = useState<number>(0);
 
@@ -364,7 +305,25 @@ export default function App() {
                 ESTABLISHED LOCAL SESSION
               </span>
               <button
-                onClick={() => setShowSettings(!showSettings)}
+                onClick={() => {
+                  setShowTraceability(!showTraceability);
+                  setShowSettings(false);
+                }}
+                type="button"
+                className={`py-1 px-2.5 text-[10px] font-mono uppercase font-semibold border transition-colors rounded cursor-pointer inline-flex items-center gap-1 ${
+                  showTraceability
+                    ? "bg-natural-accent border-natural-accent text-natural-primary hover:bg-natural-accent/90"
+                    : "bg-white/10 text-white border-white/20 hover:border-white hover:bg-white/20"
+                }`}
+              >
+                <GitBranch className="h-3 w-3" />
+                <span>{showTraceability ? "Intake Flow" : "Traceability Lab"}</span>
+              </button>
+              <button
+                onClick={() => {
+                  setShowSettings(!showSettings);
+                  setShowTraceability(false);
+                }}
                 type="button"
                 className={`py-1 px-2.5 text-[10px] font-mono uppercase font-semibold border transition-colors rounded cursor-pointer inline-flex items-center gap-1 ${
                   showSettings
@@ -390,7 +349,7 @@ export default function App() {
         <PrototypeDisclosureBanner />
 
         {/* The Progress Tracking Stepper */}
-        {!showSettings && (
+        {!showSettings && !showTraceability && (
           <Stepper
             currentStep={currentStep}
             totalSteps={STEP_NAMES.length}
@@ -408,6 +367,11 @@ export default function App() {
             settings={settings} 
             onSaveSettings={setSettings} 
             onClose={() => setShowSettings(false)} 
+          />
+        ) : showTraceability ? (
+          <TraceabilityLab 
+            settings={settings}
+            onClose={() => setShowTraceability(false)}
           />
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

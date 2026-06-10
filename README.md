@@ -1,69 +1,51 @@
-# AI Agile Audit Intake Prototype
+# AI Agile Audit Intake & Traceability Prototype
 
 A locally-runnable, highly polished clickable frontend prototype for an AI-assisted Agile, Change, and Framework-Fit audit intake and early reasoning tool.
 
-## Iteration 1: Settings Center + Traceability Foundation
+---
 
-### What this iteration implements
-- **Settings Center**: Sidebar controller coordinating project and model states.
-- **LLM Provider configuration**: Mappings targeting Gemimi, OpenAI, Anthropic, OpenRouter, and local Mock.
-- **Supabase configuration UI**: Connection coordinates forms with secure client builders.
-- **SQL schema preview**: Renders expected database tables structures inline block.
-- **Data source defaults**: Multi-format adapter support matrices tracking files upload status.
-- **Traceability policy**: Verification contracts enforcing evidence, KPIs, and counter-hypotheses.
-- **Audit defaults**: Set of initial assessment windows, languages, output formats, and audiences.
-- **Prototype safety status**: Realtime checks monitoring direct browser key exposures and RLS.
-- **Mock LLM provider**: Simulates connection handshakes and draft section contract synthesis offline.
-- **Local settings persistence**: Updates saved reliably under `scale_ai_audit_settings_v1`.
+## Iteration 1 & 2: Settings, Traceability & Audit Intelligence
 
-### What works
-- Configure mock provider and credentials metadata.
-- Configure Supabase coordinates safely without exposing private key headers.
-- Enforce strict traceability checklists.
-- Clear sandbox state back to defaults.
-- View real-time security alerts.
+### What this prototype implements
+- **System Settings Center**: Sidebar controller coordinating project, model, and database states.
+- **LLM Provider Configuration**: Explicit toggles for Gemini, OpenAI, Anthropic, OpenRouter, and a sandboxed offline **Mock Provider**.
+- **Supabase Configuration UI**: Security credentials form showing clear warnings, screening against service-role keys, and featuring local SQL schema viewer.
+- **Traceability Policy Matrix**: Configurable default policies mandating evidence linking, limitation scoping, and alternative explanations before draft reports compile.
+- **Traceability Lab (Iteration 2)**: An interactive verification workspace housing our core evidence tracing panels:
+  - **Evidence Item Manager**: Tracks qualitative source logs, interview facts, and scoping limitations. Supports adding manual items on-the-fly.
+  - **Audit Variable Registry**: Groups, defines, and maps quantitative metrics (derived from data uploads) back to physical records.
+  - **Report Section Contract Builder**: Renders and validates draft section structures against active Traceability Policies in real-time.
+  - **Traceability Chain Explorer**: Visualizes relational paths from synthesized findings down to original supporting datasets.
+  - **Visualization Contract Blueprint**: Checks telemetry data completeness across 8 chart schemas to guide developers on coordinate bindings.
 
-### What is not built yet
-- Real Jira OAuth connection queries.
-- Automated migrations executing remote DDL scripts directly from frontend panels.
-- Live LLM API calls outside sandboxed mock modes.
+### What works (Grounded Rules & Core Engines)
+- Configure mock provider connection details with zero external network exposures.
+- Enforce strict traceability policies on section drafts and trigger auto-rejection when claims lack evidence.
+- Run multi-category quantitative variables (e.g. Lead Time Medians, Workflow counts, and Link Densities) safely.
+- Clear sandbox state instantly, keeping session states fully localized to client memory buffers.
+- Run all unit tests locally with `npm run test` using `vitest`.
 
-### Security Note
-Do not use real customer data in browser-prototype API key mode. Do not store service-role keys in the frontend. Use Supabase Edge Functions for production provider calls.
+### What is safely simulated or mock
+- **Real Jira OAuth**: Abstracted via local client-side CSV uploads and field parsing suggestions.
+- **Live LLM Remote Runs**: Simulated through deterministic mock response structures that include confidence margins and scannable evidence tags.
+- **Supabase Cloud State**: The UI allows inputting coordinates to demo state flows, but keeps execution safely browser-prototype-only by default.
 
 ---
 
 ## How to run
 
-1. Install dependencies (if needed):
+1. Install dependencies:
    ```bash
    npm install
    ```
-2. Run the development server:
+2. Run the development server (localhost:3000):
    ```bash
    npm run dev
    ```
-
----
-
-## What works
-
-- **8-Step Wizard Stepper**: Includes a persistent, interactive checkloaded sequence navigator with forwards/backwards controls.
-- **Corporate Audit Scope Configurator**: Validates baseline parameters (name, goals, restrictions).
-- **Company Identity Resolver**: Simulates registry searches and supports manual entries alongside an instant "Load Demo Company" quick-triage profiles.
-- **Core Actionable AI Work Order**: Interactive parameters checklists allowing custom configuration of LLM constraints.
-- **Narrative vs Observable Alignment Metric**: Compares corporate framework claims with empirical routines tracker to identify decouplings.
-- **Local Telemetry File Preview**: Drag-and-drop or copy-pasted JIRA CSV spreadsheets. Detects mapping attributes and missing metrics columns in local sandbox memory.
-- **Cynefin Sensemaking Classifier Engine**: 11-point multidimensional slider profiling work context to generate a qualitative sensemaking hypothesis.
-- **Anomalies and Gaps Diagnostic Ledger**: Calculates completeness, flags frame conflicts, drafts counter-hypotheses, and generates research questions.
-
----
-
-## What is simulated
-
-- **AI research**: Company industry enrichment is simulated via local deterministic mapping rules.
-- **Company enrichment**: Data points have mock metadata mapping flags depending on active mode inputs.
-- **Hypothesis generation**: Advanced recommendations use custom heuristic frameworks based on input parameters instead of open-ended live models.
+3. Run the complete Vitest unit test suite:
+   ```bash
+   npm run test
+   ```
 
 ---
 
@@ -73,8 +55,9 @@ Do not use real customer data in browser-prototype API key mode. Do not store se
 | :--- | :--- | :--- | :--- |
 | **Company Identity Search** | **Simulated & Manual** | Local deterministic mapping rules (`demo` or `manual` data status) | Avoids external commercial API keys and bypasses OpenCorporates indexing. |
 | **German Unternehmensregister** | **External Linkout Only** | Explicit portal hyperlink provided in UI | Offloads register checks safely to separate manual tab. No hidden integrations. |
-| **Jira Integration** | **Click-Dummy & File Upload** | Local client-side file reading (CSV/JSON upload) with simulated inline notices | Active Jira accounts and OAuth redirections are deactivated. Processes datasets entirely in browser memory. |
-| **Heuristic Scoring Models** | **Local Rule-Based Process** | Pure deterministic scoring engine (`src/utils/auditLogic.ts`) | Calculates Cynefin assessments, contradictions, and data quality on local state. No LLM prompts or backend payloads. |
+| **Jira Integration** | **Click-Dummy & File Upload** | Local client-side file reading with column mapping proposals | Active Jira accounts and OAuth redirections are deactivated. Processes datasets entirely in browser memory. |
+| **Heuristic Scoring Models** | **Local Rule-Based Process** | Pure deterministic scoring engine (`src/utils/auditLogic.ts` & `src/utils/settingsSafety.ts`) | Calculates Cynefin assessments, contradictions, and data quality on local state. No LLM prompts or backend payloads. |
+| **Traceability Lab Workspaces** | **Local Interactive Engine** | React state compilation against predefined traceability models | Dynamically audits evidence links and flags missing metrics, scoping limits, or alternative explanations instantly. |
 | **Backend Persistence** | **Offline Sandbox** | Standard client-side state / LocalStorage | Entirely local to the client session. Zero automated background network data synchronization. |
 | **Audit Snapshot Export** | **Client-Side File Generation** | Triggerable JSON file download or text copy | Client-side creation only. No remote server-side document rendering. |
 
@@ -88,28 +71,20 @@ No demo, mock, inferred, or click-dummy data is presented as real. Clear state c
 
 ## QA Checklist Status
 
-- [x] **Truth-Boundary Copy Auditing**: Misleading telemetry and server/API connectivity claims removed.
-- [x] **Demo-Provenance Verification**: All demo seed profile attributes updated with explicit local testing origin tags.
-- [x] **Unit Testing Implementation**: Introduced `vitest` unit tests checking all principal deterministic scoring algorithms.
-- [x] **Local & Offline Sovereignty**: Sandboxed client execution strictly preserved as local-by-default.
-
----
-
-## Unresolved Deferred Gaps
-
-- **Jira OAuth Consent**: Direct integration with individual tenant workflows is in mock mode.
-- **Enterprise DB Connector**: Integration with relational tables or persistent clouds is omitted to maintain isolated offline execution.
-- **OpenCorporates Direct API**: Automatic payload resolution remains mocked with local presets.
-- **Server-Side PDF Reporting**: Deferred to client-side JSON downloads for absolute privacy.
+- [x] **Truth-Boundary Copy Auditing**: Removed all claims of background server-side connections. downgrading the AI Studio frame capabilities to standard web mode.
+- [x] **Demo-Provenance Verification**: Seeded 5 Evidence Items and 7 Audit Variables with clear local telemetry origins, limitations, and alternatives.
+- [x] **Settings defaults isolation**: Extracted settings baseline presets to `/src/config/defaultSettings.ts`.
+- [x] **Settings safety sanitization**: Added rules to strip service-role keys automatically and omit api keys from LocalStorage unless `rememberApiKey` is checked.
+- [x] **Unit Testing Implementation**: Integrated 18 distinct `vitest` unit tests covering both the deterministic heuristics, active safety filters, and mock provider specs.
+- [x] **Traceability Lab UI suite**: Designed 5 sub-views representing all Iteration 2 goals perfectly.
+- [x] **Local & Offline Sovereignty**: Sandboxed client execution strictly preserved as local-by-default with zero external live network operations.
 
 ---
 
 ## Next implementation steps
 
-1. Add backend persistence.
-2. Add authentication.
-3. Add Jira OAuth.
-4. Add company data adapter.
-5. Add LLM provider abstraction.
-6. Add audit ledger.
+1. Enable persistent cloud-state authentication and database syncing (Supabase option).
+2. Establish real Jira API connections following OAuth user delegation.
+3. Integrate real server-side LLM calling schemas via proxy setups.
+
 
